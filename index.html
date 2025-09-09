@@ -9,6 +9,8 @@
   <meta content="" name="keywords">
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <script src="https://code.highcharts.com/modules/data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
   <!-- Favicons -->
   <link href="assets/img/BPKlogo.png" rel="icon">
 
@@ -387,9 +389,18 @@
         </div>
 
       <script>
-        const totalPagu = 13100100000;
-        const realisasi = 3967912780;
-        const blokir = 3740953000;
+    const csvUrl = 'https://mpunk.github.io/portal_hal/chart.csv?v=' + Date.now(); // Ganti URL ini
+
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const row = results.data[0];
+
+        // Parsing dan hitung data
+        const totalPagu = parseFloat(row.totalPagu);
+        const realisasi = parseFloat(row.realisasi);
+        const blokir = parseFloat(row.blokir);
         const sisa = totalPagu - realisasi - blokir;
 
         // PIE CHART
@@ -423,11 +434,14 @@
             colorByPoint: true,
             data: [
               { name: 'Realisasi', y: realisasi, color: '#1cc88a' },
-              { name: 'Blokir', y: blokir, color: '#e74a3b' }, // merah
+              { name: 'Blokir', y: blokir, color: '#e74a3b' },
               { name: 'Sisa Anggaran', y: sisa, color: '#4e73df' }
             ]
           }]
         });
+      }
+    });
+
 
         // BAR CHART
         const realisasiBulanan = [
@@ -701,14 +715,12 @@
 
         <div class="slideshow-container" data-aos="fade-up">
           <div class="slides">
-            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/cddg/index.html" target="_blank"><img src="assets/img/laptah/laptah2024.png" alt="Laporan 1"></a></div>
-            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/lvss/index.html" target="_blank"><img src="assets/img/laptah/laptah2023.png" alt="Laporan 2"></a></div>
-            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/qqhk/index.html" target="_blank"><img src="assets/img/laptah/laptah2022.png" alt="Laporan 1"></a></div>
-            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/wnur/index.html" target="_blank"><img src="assets/img/laptah/laptah2021.png" alt="Laporan 1"></a></div>
-            <div class="slide"><img src="assets/img/laptah/laptah2020.png" alt="Laporan 5"></div>
-            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/lvss/index.html"><img src="assets/img/laptah/laptah2019.png" alt="Laporan 6"></a></div>
-            <div class="slide"><img src="assets/img/laptah/laptah20181.png" alt="Laporan 7"></div>
-            <div class="slide"><img src="assets/img/laptah/laptah2017.png" alt="Laporan 8"></div>
+            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/cddg/index.html" target="_blank"><img src="assets/img/laptah/2021.png" alt="Laporan 1"></a></div>
+            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/lvss/index.html" target="_blank"><img src="assets/img/laptah/2020.png" alt="Laporan 2"></a></div>
+            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/qqhk/index.html" target="_blank"><img src="assets/img/laptah/laptah2022.png" alt="Laporan 3"></a></div>
+            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/wnur/index.html" target="_blank"><img src="assets/img/laptah/laptah2021.png" alt="Laporan 4"></a></div>
+            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/wnur/index.html" target="_blank"><img src="assets/img/laptah/laptah2021.png" alt="Laporan 4"></a></div>
+
           </div>
           <!-- Tombol Navigasi -->
           <a class="prev" onclick="moveSlide(-1)">&#10094;</a>
