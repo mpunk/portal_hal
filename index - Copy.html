@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pie Chart Anggaran</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+</head>
+<body>
+
+<div id="container" style="width: 80%; height: 400px; margin: auto;"></div>
+
+<script>
+  // Ganti dengan Spreadsheet ID kamu
+  const SPREADSHEET_ID = '2PACX-1vQlDkrXWfevVtCY0uLaClY42uavtZgYMfr8J7W8KJbHTosaRX2MG38bYriMU9jYFfSBeQcFAISXCVaP';
+  // Ganti dengan nama sheet
+  const SHEET_NAME = 'Sheet1';
+  // API Key Google Cloud (dapatkan dari Google Cloud Console)
+  const API_KEY = 'AIzaSyAu5fWE02jM71504wdLDC0mZEi9Urhs-0I';
+
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      // Ambil data mulai dari baris kedua (abaikan header)
+      const rows = data.values.slice(1);
+
+      // Konversi ke format Highcharts
+      const chartData = rows.map(row => ({
+        name: row[0],
+        y: parseFloat(row[1])
+      }));
+
+      Highcharts.chart('container', {
+        chart: {
+          type: 'pie'
+        },
+        title: {
+          text: 'Realisasi Anggaran'
+        },
+        tooltip: {
+          pointFormat: '{series.name}: <b>{point.y}</b>'
+        },
+        accessibility: {
+          point: {
+            valueSuffix: ' IDR'
+          }
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              format: '<b>{point.name}</b>: {point.y}'
+            }
+          }
+        },
+        series: [{
+          name: 'Anggaran',
+          colorByPoint: true,
+          data: chartData
+        }]
+      });
+    })
+    .catch(err => console.error('Error:', err));
+</script>
+
+</body>
+</html>
