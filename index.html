@@ -373,7 +373,7 @@
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Anggaran dan Realisasi</h2>
-        <p>Pagu : Rp 13.100.100.000</p>
+        <p id="outputtotal"></p>
       </div><!-- End Section Title -->
 
         <div class="row" data-aos="fade-up">
@@ -392,58 +392,122 @@
     const csvUrl = 'https://mpunk.github.io/portal_hal/chart.csv?v=' + Date.now(); // Ganti URL ini
 
     Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const row = results.data[0];
+    download: true,
+    header: true,
+    complete: function(results) {
+      const row = results.data[0];
 
-        // Parsing dan hitung data
-        const totalPagu = parseFloat(row.totalPagu);
-        const realisasi = parseFloat(row.realisasi);
-        const blokir = parseFloat(row.blokir);
-        const sisa = totalPagu - realisasi - blokir;
+      // Parsing dan hitung data
+      const totalPagu = parseFloat(row.totalPagu);
+      const formattedRupiah = totalPagu.toLocaleString('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+      });
 
-        // PIE CHART
-        Highcharts.chart('pie-chart', {
-          chart: {
-            type: 'pie',
-            backgroundColor: 'transparent'
-          },
-          title: {
-            text: 'Distribusi Realisasi, Blokir, dan Sisa Anggaran'
-          },
-          tooltip: {
-            pointFormat: '{series.name}: <b>Rp{point.y:,.0f}</b> ({point.percentage:.1f}%)'
-          },
-          plotOptions: {
-            pie: {
-              allowPointSelect: true,
-              cursor: 'pointer',
-              dataLabels: {
-                enabled: true,
-                format: '{point.name}: Rp{point.y:,.0f}',
-                distance: 30
+      // Tampilkan ke HTML
+      document.getElementById('outputtotal').innerHTML = 'Total Pagu : ' + formattedRupiah;
+      const realisasi = parseFloat(row.realisasi);
+      const blokir = parseFloat(row.blokir);
+      const sisa = totalPagu - realisasi - blokir;
+
+      // Set format separator untuk Highcharts
+      Highcharts.setOptions({
+        lang: {
+          thousandsSep: '.',
+          decimalPoint: ','
+        }
+      });
+
+      // PIE CHART dengan label total pagu di tengah
+      Highcharts.chart('pie-chart', {
+        chart: {
+          type: 'pie',
+          backgroundColor: 'transparent',
+          events: {
+            render: function () {
+              const chart = this;
+
+              // Hapus label sebelumnya jika ada
+              if (chart.customLabel) {
+                chart.customLabel.destroy();
               }
+
+              // Buat label teks total pagu dengan background
+              chart.customLabel = chart.renderer.label(
+                `Total Pagu<br><b>${formattedRupiah}</b>`,
+                0,
+                0,
+                'rect',
+                0,
+                0,
+                true,
+                true
+              )
+              .css({
+                color: '#000',
+                fontSize: '16px',
+                textAlign: 'center'
+              })
+              .attr({
+                align: 'center',
+                padding: 8,
+                fill: 'rgba(255,255,255,0.85)',  // background putih semi-transparan
+                stroke: '#ccc',
+                'stroke-width': 1,
+                r: 6 // border-radius
+              })
+              .add();
+
+              // Hitung posisi agar teks di tengah chart
+              const bbox = chart.customLabel.getBBox();
+              const centerX = chart.plotLeft + chart.plotWidth / 2;
+              const centerY = chart.plotTop + chart.plotHeight / 2;
+
+              chart.customLabel.attr({
+                x: centerX - bbox.width / 2 + 50, // ← tambah ke kanan
+                y: centerY - bbox.height / 2 + 20
+              });
+
+              // Pastikan teks berada di atas semua elemen chart
+              chart.customLabel.toFront();
             }
-          },
-          credits: {
-            enabled: false
-          },
-          series: [{
-            name: 'Anggaran',
-            colorByPoint: true,
-            data: [
-              { name: 'Realisasi', y: realisasi, color: '#1cc88a' },
-              { name: 'Blokir', y: blokir, color: '#e74a3b' },
-              { name: 'Sisa Anggaran', y: sisa, color: '#4e73df' }
-            ]
-          }]
-        });
-      }
-    });
+          }
+        },
+        title: {
+          text: 'Distribusi Realisasi, Blokir, dan Sisa Anggaran'
+        },
+        tooltip: {
+          pointFormat: '{series.name}: <b>Rp{point.y:,.0f}</b> ({point.percentage:.1f}%)'
+        },
+        plotOptions: {
+          pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+              enabled: true,
+              format: '{point.name}: Rp{point.y:,.0f}',
+              distance: 30
+            }
+          }
+        },
+        credits: {
+          enabled: false
+        },
+        series: [{
+          name: 'Anggaran',
+          colorByPoint: true,
+          data: [
+            { name: 'Realisasi', y: realisasi, color: '#1cc88a' },
+            { name: 'Blokir', y: blokir, color: '#e74a3b' },
+            { name: 'Sisa Anggaran', y: sisa, color: '#4e73df' }
+          ]
+        }]
+      });
+    }
+  });
 
-
-        // BAR CHART
+  // BAR CHART
         const realisasiBulanan = [
           0, //Januari  
           1609621150	,  //Februari
@@ -458,7 +522,12 @@
           0,  //November
           0 // Desember
         ];
-
+        Highcharts.setOptions({
+          lang: {
+            thousandsSep: '.',
+            decimalPoint: ','
+          }
+        });
         Highcharts.chart('bar-chart', {
           chart: {
             type: 'column',
