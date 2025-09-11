@@ -373,7 +373,6 @@
       <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <h2>Anggaran dan Realisasi</h2>
-        <p id="outputtotal"></p>
       </div><!-- End Section Title -->
 
         <div class="row" data-aos="fade-up">
@@ -388,94 +387,65 @@
           </div>
         </div>
 
-      <script>
-    const csvUrl = 'https://mpunk.github.io/portal_hal/chart.csv?v=' + Date.now(); // Ganti URL ini
-
-    Papa.parse(csvUrl, {
+<script>
+  // PIE CHART
+  const pieCsvUrl = 'https://mpunk.github.io/portal_hal/chart.csv?v=' + Date.now();
+  Papa.parse(pieCsvUrl, {
     download: true,
     header: true,
     complete: function(results) {
       const row = results.data[0];
 
-      // Parsing dan hitung data
       const totalPagu = parseFloat(row.totalPagu);
-      const formattedRupiah = totalPagu.toLocaleString('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0
-      });
-
-      // Tampilkan ke HTML
-      document.getElementById('outputtotal').innerHTML = 'Total Pagu : ' + formattedRupiah;
       const realisasi = parseFloat(row.realisasi);
       const blokir = parseFloat(row.blokir);
       const sisa = totalPagu - realisasi - blokir;
 
-      // Set format separator untuk Highcharts
-      Highcharts.setOptions({
-        lang: {
-          thousandsSep: '.',
-          decimalPoint: ','
-        }
-      });
+      const formattedRupiah = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR'
+      }).format(totalPagu);
 
-      // PIE CHART dengan label total pagu di tengah
       Highcharts.chart('pie-chart', {
         chart: {
           type: 'pie',
           backgroundColor: 'transparent',
-          events: {
-            render: function () {
-              const chart = this;
+events: {
+  render: function () {
+    const chart = this;
+    if (chart.customLabel) chart.customLabel.destroy();
 
-              // Hapus label sebelumnya jika ada
-              if (chart.customLabel) {
-                chart.customLabel.destroy();
-              }
+    chart.customLabel = chart.renderer.label(
+      `Total Pagu<br><b>${formattedRupiah}</b>`,
+      0, 0, 'rect'
+    ).css({
+      color: '#000',
+      fontSize: '16px',
+      textAlign: 'center'
+    }).attr({
+      align: 'center',
+      padding: 8,
+      fill: 'rgba(255,255,255,0.85)',
+      stroke: '#ccc',
+      'stroke-width': 1,
+      r: 6
+    }).add();
 
-              // Buat label teks total pagu dengan background
-              chart.customLabel = chart.renderer.label(
-                `Total Pagu<br><b>${formattedRupiah}</b>`,
-                0,
-                0,
-                'rect',
-                0,
-                0,
-                true,
-                true
-              )
-              .css({
-                color: '#000',
-                fontSize: '16px',
-                textAlign: 'center'
-              })
-              .attr({
-                align: 'center',
-                padding: 8,
-                fill: 'rgba(255,255,255,0.85)',  // background putih semi-transparan
-                stroke: '#ccc',
-                'stroke-width': 1,
-                r: 6 // border-radius
-              })
-              .add();
+    const bbox = chart.customLabel.getBBox();
+    const centerX = chart.plotLeft + chart.plotWidth / 2;
+    const bottomY = chart.plotTop + chart.plotHeight - 190; // 10px di bawah chart
 
-              // Hitung posisi agar teks di tengah chart
-              const bbox = chart.customLabel.getBBox();
-              const centerX = chart.plotLeft + chart.plotWidth / 2;
-              const centerY = chart.plotTop + chart.plotHeight / 2;
+    chart.customLabel.attr({
+      x: centerX - bbox.width / 2,
+      y: bottomY
+    });
 
-              chart.customLabel.attr({
-                x: centerX - bbox.width / 2 + 80, // ← tambah ke kanan
-                y: centerY - bbox.height / 2 + 20
-              });
-
-              // Pastikan teks berada di atas semua elemen chart
-              chart.customLabel.toFront();
-            }
-          }
+    chart.customLabel.toFront();
+  }
+}
         },
         title: {
-          text: 'Distribusi Realisasi, Blokir, dan Sisa Anggaran'
+          text: 'Realisasi, Blokir, dan Sisa Anggaran'
         },
         tooltip: {
           pointFormat: '{series.name}: <b>Rp{point.y:,.0f}</b> ({point.percentage:.1f}%)'
@@ -508,77 +478,75 @@
   });
 
   // BAR CHART
-        const realisasiBulanan = [
-          0, //Januari  
-          1609621150	,  //Februari
-          519252620,  //Maret
-          670158440	, //April
-          568970000,  //Mei
-          599910260, //Juni
-          1092186690	, //Juli
-          0,  //Agustus
-          0,  //September
-          0, //Oktober
-          0,  //November
-          0 // Desember
-        ];
-        Highcharts.setOptions({
-          lang: {
-            thousandsSep: '.',
-            decimalPoint: ','
-          }
-        });
-        Highcharts.chart('bar-chart', {
-          chart: {
-            type: 'column',
-            backgroundColor: 'transparent'
-          },
+  const barCsvUrl = 'https://mpunk.github.io/portal_hal/realisasi_bulanan.csv?v=' + Date.now();
+  Papa.parse(barCsvUrl, {
+    download: true,
+    header: true,
+    complete: function(results) {
+      const data = results.data;
+      const realisasiBulanan = data.map(row => parseFloat(row.realisasi || 0));
+
+      Highcharts.setOptions({
+        lang: {
+          thousandsSep: '.',
+          decimalPoint: ','
+        }
+      });
+
+      Highcharts.chart('bar-chart', {
+        chart: {
+          type: 'column',
+          backgroundColor: 'transparent'
+        },
+        title: {
+          text: 'Realisasi Anggaran Per Bulan - Tahun 2025'
+        },
+        xAxis: {
+          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+          crosshair: true
+        },
+        yAxis: {
           title: {
-            text: 'Realisasi Anggaran Per Bulan - Tahun 2025'
+            text: 'Jumlah (Rp)'
           },
-          xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-            crosshair: true
-          },
-          yAxis: {
-            title: {
-              text: 'Jumlah (Rp)'
-            },
-            labels: {
-              formatter: function () {
-                return 'Rp' + this.value.toLocaleString();
-              }
+          labels: {
+            formatter: function () {
+              return 'Rp' + this.value.toLocaleString('id-ID');
             }
-          },
-          tooltip: {
-            pointFormat: 'Realisasi: <b>Rp{point.y:,.0f}</b>'
-          },
-          plotOptions: {
-            column: {
-              borderRadius: 5,
-              pointPadding: 0.1,
-              groupPadding: 0.1,
-              dataLabels: {
-                enabled: true,
-                format: 'Rp{y:,.0f}',
-                allowOverlap: true,
-                crop: false,
-                overflow: 'none'
-              }
+          }
+        },
+        tooltip: {
+          pointFormat: 'Realisasi: <b>Rp{point.y:,.0f}</b>'
+        },
+        plotOptions: {
+          column: {
+            borderRadius: 5,
+            pointPadding: 0.1,
+            groupPadding: 0.1,
+            dataLabels: {
+              enabled: true,
+              format: 'Rp{y:,.0f}',
+              allowOverlap: true,
+              crop: false,
+              overflow: 'none'
             }
-          },
-          legend: {
-            enabled: false // ⛔ HILANGKAN series name/legend
-          },
-          credits: {
-            enabled: false
-          },
-          series: [{
-            data: realisasiBulanan,
-            color: '#1cc88a' // Hijau
-          }]
-        });
-      </script>
+          }
+        },
+        legend: {
+          enabled: false
+        },
+        credits: {
+          enabled: false
+        },
+        series: [{
+          data: realisasiBulanan,
+          color: '#1cc88a'
+        }]
+      });
+    }
+  });
+</script>
+
     </section><!-- /Resume Section -->
 
     <!-- Contact Section -->
