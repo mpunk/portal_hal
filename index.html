@@ -389,7 +389,7 @@
 
 <script>
   // PIE CHART
-  const pieCsvUrl = 'https://mpunk.github.io/portal_hal/chart.csv?v=' + Date.now();
+  const pieCsvUrl = 'https://raw.githubusercontent.com/mpunk/portal_hal/data/chart.csv?v=' + Date.now();
   Papa.parse(pieCsvUrl, {
     download: true,
     header: true,
@@ -478,7 +478,7 @@ events: {
   });
 
   // BAR CHART
-  const barCsvUrl = 'https://mpunk.github.io/portal_hal/realisasi_bulanan.csv?v=' + Date.now();
+  const barCsvUrl = 'https://raw.githubusercontent.com/mpunk/portal_hal/data/realisasi_bulanan.csv?v=' + Date.now();
   Papa.parse(barCsvUrl, {
     download: true,
     header: true,
