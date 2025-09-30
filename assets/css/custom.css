@@ -4,7 +4,9 @@
       font-weight: 400;
       color: #333;
     }
-
+#header {
+  background-color: transparent;
+}
     /* Heading (biar lebih tegas tapi tetap Poppins) */
     h1, h2, h3, h4, h5, h6 {
       font-family: 'Poppins', sans-serif !important;
