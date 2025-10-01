@@ -276,6 +276,16 @@ h6 {
   display: block;
 }
 
+#navmenu {
+position: fixed;
+  left: 0;
+  top: 50%;               /* posisi dari atas 50% */
+  transform: translateY(-50%);  /* geser ke atas setengah tinggi element supaya benar-benar tengah */
+  background-color: transparent; /* contoh warna latar */
+  padding-top: 20px;
+  overflow-y: auto; /* kalau menu panjang, bisa di scroll */
+}
+
 /*--------------------------------------------------------------
 # Global Footer
 --------------------------------------------------------------*/
