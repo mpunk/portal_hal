@@ -269,29 +269,19 @@ height: 100%;
     }
 
     /* Warna otomatis (berulang) */
-    .event-color-1 {
-      background-color: #42a5f5;
-      border-color: #1e88e5;
+    .event-blue {
+      background-color: #e9dd37;
+      border-color: #91a80d;
     }
 
-    .event-color-2 {
+    .event-green{
       background-color: #66bb6a;
       border-color: #43a047;
     }
 
-    .event-color-3 {
-      background-color: #ffa726;
-      border-color: #fb8c00;
-    }
-
-    .event-color-4 {
-      background-color: #ef5350;
-      border-color: #e53935;
-    }
-
-    .event-color-5 {
-      background-color: #ab47bc;
-      border-color: #8e24aa;
+    .event-purple {
+      background-color: #42a5f5;
+      border-color: #1e88e5;
     }
 
     /* Holiday Highlight */
