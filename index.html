@@ -1,608 +1,139 @@
-<!DOCTYPE html>
-<html lang="en">
-
+ <!DOCTYPE html>
+<html lang="id">
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Portal | Bagian Hubungan Antar Lembaga</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-  <script src="https://code.highcharts.com/highcharts.js"></script>
-  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
-  <script src="https://code.highcharts.com/modules/data.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
-  <!-- Favicons -->
-  <link href="assets/img/BPKlogo.png" rel="icon">
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
-  <!-- Main CSS File -->
-  <link href="assets/css/main.css" rel="stylesheet">
-  <link href="assets/css/custom.css" rel="stylesheet">
-  <!-- =======================================================
-  * Template Name: MyResume
-  * Template URL: https://bootstrapmade.com/free-html-bootstrap-template-my-resume/
-  * Updated: Jun 29 2024 with Bootstrap v5.3.3
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kalender Gabungan</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #calendar { 
+      display: grid; 
+      grid-template-columns: repeat(7, 1fr); 
+      gap: 5px; 
+    }
+    .day-name { font-weight: bold; text-align: center; background: #eee; padding: 5px; }
+    .day { border: 1px solid #ccc; min-height: 80px; padding: 4px; position: relative; }
+    .sunday { background: #fce4ec; }
+    .saturday { background: #e3f2fd; }
+    .date { font-weight: bold; margin-bottom: 4px; }
+    .event { font-size: 12px; padding: 2px 4px; margin: 2px 0; border-radius: 4px; color: #fff; }
+    .holiday { background: #c62828; }      /* merah */
+    .calendar1 { background: #2e7d32; }    /* hijau */
+    .calendar2 { background: #1565c0; }    /* biru */
+  </style>
 </head>
+<body>
+  <h2 id="month-year"></h2>
+  <button onclick="changeMonth(-1)">◀️ Bulan Sebelumnya</button>
+  <button onclick="changeMonth(1)">Bulan Berikutnya ▶️</button>
+  <div id="calendar"></div>
 
-<body class="index-page">
+  <script>
+    const calendarEl = document.getElementById("calendar");
+    const monthYearEl = document.getElementById("month-year");
 
-  <header id="header" >
+    // Ganti dengan calendar ID masing-masing
+    const calendar1 = "bagianhal@gmail.com"; 
+    const calendar2 = "subbaghlnp@gmail.com";
+    const calendarHoliday = "id.indonesian#holiday@group.v.calendar.google.com";
+    const apiKey = "AIzaSyB9-FN6i4QpKFwiW4xC74x1WIkaQM8rHTI";
 
-    <i class="header-toggle d-xl-none bi bi-list"></i>
+    const dayNames = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+    let currentDate = new Date();
 
-    <nav id="navmenu" class="navmenu">
-      <ul>
-        <li><a href="#hero" class="active"><i class="bi bi-house navicon"></i><span>Beranda</span></a></li>
-        <li><a href="#about"><i class="bi bi-check2-square navicon"></i><span>Tentang</span></a></li>
-        <li><a href="#resume"><i class="bi bi-cash-stack navicon"></i><span>Anggaran</span></a></li>
-        <li><a href="#contact"><i class="bi bi-bar-chart navicon"></i><span>Kegiatan</span></a></li>
-        <li><a href="#portfolio"><i class="bi bi-calendar2-event navicon"></i><span>Agenda</span></a></li>
-        <li><a href="#struktur"><i class="bi bi-diagram-3 navicon"></i><span>Struktur Organisasi</span></a></li>
-        <li><a href="#services"><i class="bi bi-journal-text navicon"></i><span>Laporan Tahunan</span></a></li>
-      </ul>
-    </nav>
-
-  </header>
-
-  <main class="main">
-
-    <!-- Hero Section -->
-    <section id="hero">
-      <video autoplay muted loop playsinline>
-        <source src="https://www.dropbox.com/scl/fi/bnu368cpgyrjmq6kkf7c3/JCC.mp4?rlkey=lmh5f3612iw8bdm6ckjnik33c&st=amqqhxef&raw=1" type="video/mp4">
-        Browser Anda tidak mendukung video.
-      </video>
-      <div class="overlay"></div>
-      <div class="hero-content">
-        <!-- Logo di atas teks -->
-        <img src="assets/img/BPKlogo.png" alt="Logo" class="hero-logo" />
-        
-        PORTAL BAGIAN<br>
-      - <span class="typed" data-typed-items="HUBUNGAN, ANTAR, LEMBAGA"></span>
-        <span class="typed-cursor typed-cursor--blink" aria-hidden="true"></span> -
-        <br>BIRO HUMAS DAN KERJA SAMA INTERNASIONAL          
-      </div>
-    </section>
-
-
-    <!-- About Section -->
-    <section id="about" class="about section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Tentang</h2>
-        <p>Bagian Hubungan Antar Lembaga mempunyai tugas melaksanakan
-          kegiatan hubungan dan kerja sama dengan lembaga negara/pemerintah dan nonpemerintah dalam negeri terkait dengan pelaksanaan tugas BPK.</p>
-      </div><!-- End Section Title -->
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row gy-4 justify-content-center">
-          <div class="col-lg-4">
-            <img src="assets/img/BPKlogo.png" class="img-fluid" alt="">
-          </div>
-          <div class="col-lg-8 content">
-            <p class="fst-italic py-3">
-              Dalam melaksanakan tugasnya, Bagian Hubungan Antar Lembaga menyelenggarakan fungsi:
-            </p>
-            <div class="row">
-                <ul>
-                  <li><i class="bi bi-chevron-right"></i> <strong>Penyiapan bahan strategi, kebijakan, dan rencana di bidang hubungan dan kerja sama dengan 
-                  lembaga negara/pemerintah dan nonpemerintah dalam negeri terkait dengan pelaksanaan tugas BPK.</strong></li>
-                  <li><i class="bi bi-chevron-right"></i> <strong>Pelaksanaan strategi, kebijakan, dan rencana di bidang hubungan dan kerja sama dengan
-                  lembaga negara/pemerintah dan nonpemerintah dalam negeri terkait dengan pelaksanaan tugas BPK.</strong></li>
-                  <li><i class="bi bi-chevron-right"></i> <strong>Penyiapan bahan penyusunan Laporan Akuntabilitas Kinerja Biro Humas dan Kerja Sama Internasional. </strong></li>
-                </ul>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </section><!-- /About Section -->
-
-    <!-- Resume Section -->
-    <section id="resume" class="resume section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Anggaran dan Realisasi</h2>
-      </div><!-- End Section Title -->
-
-        <div class="row" data-aos="fade-up">
-          <!-- Pie Chart -->
-          <div class="col-lg-6 col-md-12 chart-box">
-            <div id="pie-chart"></div>
-          </div>
-
-          <!-- Bar Chart -->
-          <div class="col-lg-6 col-md-12 chart-box">
-            <div id="bar-chart"></div>
-          </div>
-        </div>
-
-<script>
-  // PIE CHART
-  const pieCsvUrl = 'https://raw.githubusercontent.com/mpunk/portal_hal/data/chart.csv?v=' + Date.now();
-  Papa.parse(pieCsvUrl, {
-    download: true,
-    header: true,
-    complete: function(results) {
-      const row = results.data[0];
-
-      const totalPagu = parseFloat(row.totalPagu);
-      const realisasi = parseFloat(row.realisasi);
-      const blokir = parseFloat(row.blokir);
-      const sisa = totalPagu - realisasi - blokir;
-
-      const formattedRupiah = new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR'
-      }).format(totalPagu);
-
-      Highcharts.chart('pie-chart', {
-        chart: {
-          type: 'pie',
-          backgroundColor: 'transparent',
-          events: {
-            render: function () {
-              const chart = this;
-              if (chart.customLabel) chart.customLabel.destroy();
-
-              chart.customLabel = chart.renderer.label(
-                `Total Pagu<br><b>${formattedRupiah}</b>`,
-                0, 0, 'rect'
-              ).css({
-                color: '#000',
-                fontSize: '16px',
-                textAlign: 'center'
-              }).attr({
-                align: 'center',
-                padding: 8,
-                fill: 'rgba(255,255,255,0.85)',
-                stroke: '#ccc',
-                'stroke-width': 1,
-                r: 6
-              }).add();
-
-              const bbox = chart.customLabel.getBBox();
-              const centerX = chart.plotLeft + chart.plotWidth / 2;
-              const bottomY = chart.plotTop + chart.plotHeight - 190; // 10px di bawah chart
-
-              chart.customLabel.attr({
-                x: centerX - bbox.width / 2,
-                y: bottomY
-              });
-
-              chart.customLabel.toFront();
-            }
-          }
-        },
-        title: {
-          text: 'Realisasi, Blokir, dan Sisa Anggaran'
-        },
-        tooltip: {
-          pointFormat: '{series.name}: <b>Rp{point.y:,.0f}</b> ({point.percentage:.1f}%)'
-        },
-        plotOptions: {
-          pie: {
-            allowPointSelect: true,
-            cursor: 'pointer',
-            dataLabels: {
-              enabled: true,
-              format: '{point.name}: Rp{point.y:,.0f}',
-              distance: 30
-            }
-          }
-        },
-        credits: {
-          enabled: false
-        },
-        series: [{
-          name: 'Anggaran',
-          colorByPoint: true,
-          data: [
-            { name: 'Realisasi', y: realisasi, color: '#1cc88a' },
-            { name: 'Blokir', y: blokir, color: '#e74a3b' },
-            { name: 'Sisa Anggaran', y: sisa, color: '#4e73df' }
-          ]
-        }]
-      });
-    }
-  });
-
-  // BAR CHART
-  const barCsvUrl = 'https://raw.githubusercontent.com/mpunk/portal_hal/data/realisasi_bulanan.csv?v=' + Date.now();
-  Papa.parse(barCsvUrl, {
-    download: true,
-    header: true,
-    complete: function(results) {
-      const data = results.data;
-      const realisasiBulanan = data.map(row => parseFloat(row.realisasi || 0));
-
-      Highcharts.setOptions({
-        lang: {
-          thousandsSep: '.',
-          decimalPoint: ','
-        }
+    function render() {
+      calendarEl.innerHTML = "";
+      monthYearEl.textContent = currentDate.toLocaleDateString("id-ID", {
+        month: "long",
+        year: "numeric",
       });
 
-      Highcharts.chart('bar-chart', {
-        chart: {
-          type: 'column',
-          backgroundColor: 'transparent'
-        },
-        title: {
-          text: 'Realisasi Anggaran Per Bulan - Tahun 2025'
-        },
-        xAxis: {
-          categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-          crosshair: true
-        },
-        yAxis: {
-          title: {
-            text: 'Jumlah (Rp)'
-          },
-          labels: {
-            formatter: function () {
-              return 'Rp' + this.value.toLocaleString('id-ID');
-            }
-          }
-        },
-        tooltip: {
-          pointFormat: 'Realisasi: <b>Rp{point.y:,.0f}</b>'
-        },
-        plotOptions: {
-          column: {
-            borderRadius: 5,
-            pointPadding: 0.1,
-            groupPadding: 0.1,
-            dataLabels: {
-              enabled: true,
-              format: 'Rp{y:,.0f}',
-              allowOverlap: true,
-              crop: false,
-              overflow: 'none'
-            }
-          }
-        },
-        legend: {
-          enabled: false
-        },
-        credits: {
-          enabled: false
-        },
-        series: [{
-          data: realisasiBulanan,
-          color: '#1cc88a'
-        }]
-      });
-    }
-  });
-</script>
-
-    </section><!-- /Resume Section -->
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Kegiatan</h2>
-        <p>Jumlah Kegiatan Tahun 2025</p>
-      </div><!-- End Section Title -->
-
-      <div class="container" data-aos="fade" data-aos-delay="100">
-        <div id="perbandinganChart" style="height: 500px;"></div>
-      </div>
-      <script>
-        Highcharts.chart('perbandinganChart', {
-          chart: {
-            type: 'column',
-            backgroundColor: '#ffffff' // Background putih
-          },
-          title: {
-            text: '',
-            style: { color: '#333', fontSize: '18px' }
-          },
-          xAxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 
-                        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
-            labels: { style: { color: '#333' } },
-            lineColor: '#ccc',
-            gridLineColor: '#eee'
-          },
-          yAxis: {
-            title: { text: 'Jumlah Kegiatan', style: { color: '#333' } },
-            labels: { style: { color: '#333' } },
-            gridLineColor: '#eee'
-          },
-          legend: {
-            itemStyle: { color: '#333' }
-          },
-          tooltip: {
-            shared: true,
-            crosshairs: true
-          },
-          series: [
-            {
-              name: 'Subbagian Hubungan Lembaga Negara/Pemerintah',
-              data: [5, 8, 6, 10, 12, 9, 11, 13, 7, 8, 12, 14],
-              color: '#4e79a7'
-            },
-            {
-              name: 'Subbagian Hubungan Lembaga Non Pemerintah',
-              data: [3, 6, 5, 7, 9, 8, 10, 12, 6, 7, 9, 11],
-              color: '#e15759'
-            }
-          ],
-          credits: { enabled: false }
-        });
-      </script>
-    </section><!-- /Contact Section -->
-
-    <!-- Portfolio Section -->
-    <section id="portfolio" class="portfolio section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Agenda</h2>
-        <p><span id="month-year"></span></p>
-      </div><!-- End Section Title -->
-
-      <div lass="container">
-
-        <div class="nav">
-          <button onclick="changeMonth(-1)">← Sebelumnya</button>
-          <button onclick="changeMonth(1)">Berikutnya →</button>
-        </div>
-
-        <div class="calendar" id="calendar">
-          <!-- Hari dan tanggal akan dirender via JavaScript -->
-        </div>
-         
-
-
-<script>
-  const calendarEl = document.getElementById("calendar");
-  const monthYearEl = document.getElementById("month-year");
-
-  // Ganti dengan Calendar ID masing-masing
-  const calendar1 = "bagianhal@gmail.com";
-  const calendar2 = "subbaghlnp@gmail.com";
-  const calendarHoliday = "id.indonesian#holiday@group.v.calendar.google.com";
-
-  // API key cukup satu
-  const apiKey = "AIzaSyB9-FN6i4QpKFwiW4xC74x1WIkaQM8rHTI";
-
-  const dayNames = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
-  let currentDate = new Date();
-
-  function render() {
-    calendarEl.innerHTML = "";
-    monthYearEl.textContent = currentDate.toLocaleDateString("id-ID", {
-      month: "long",
-      year: "numeric",
-    });
-
-    // header nama hari
-    dayNames.forEach((name) => {
-      const div = document.createElement("div");
-      div.textContent = name;
-      calendarEl.appendChild(div);
-    });
-
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const start = new Date(year, month, 1);
-    const end = new Date(year, month + 1, 1);
-    const startDay = start.getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    // slot kosong sebelum tanggal 1
-    for (let i = 0; i < startDay; i++) {
-      calendarEl.appendChild(document.createElement("div"));
-    }
-
-    const eventsByDate = {};
-
-    // fungsi ambil event dari 1 kalender
-    const fetchEvents = (calendarId) =>
-      fetch(
-        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&singleEvents=true&orderBy=startTime&maxResults=2500`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          (data.items || []).forEach((event) => {
-            const startDate = event.start.date || event.start.dateTime;
-            if (!startDate) return;
-            const date = new Date(startDate);
-            const day = date.getDate();
-            if (!eventsByDate[day]) eventsByDate[day] = [];
-            eventsByDate[day].push({
-              summary: event.summary,
-              calendar: calendarId,
-            });
-          });
-        })
-        .catch((err) => console.error("Gagal ambil event:", calendarId, err));
-
-    // ambil event dari semua kalender
-    Promise.allSettled([
-      fetchEvents(calendar1),
-      fetchEvents(calendar2),
-      fetchEvents(calendarHoliday)
-    ]).then(() => {
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
+      // header nama hari
+      dayNames.forEach((name) => {
         const div = document.createElement("div");
-        const dateDiv = document.createElement("div");
-        dateDiv.textContent = day;
-        div.appendChild(dateDiv);
-
-        if (eventsByDate[day]) {
-          eventsByDate[day].forEach((event) => {
-            const eventDiv = document.createElement("div");
-            eventDiv.textContent = event.summary + " (" + event.calendar + ")";
-            div.appendChild(eventDiv);
-          });
-        }
-
+        div.className = "day-name";
+        div.textContent = name;
         calendarEl.appendChild(div);
+      });
+
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const start = new Date(year, month, 1);
+      const end = new Date(year, month + 1, 1);
+      const startDay = start.getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < startDay; i++) {
+        calendarEl.appendChild(document.createElement("div"));
       }
-    });
-  }
 
-  function changeMonth(direction) {
-    currentDate.setMonth(currentDate.getMonth() + direction);
-    render();
-  }
+      const eventsByDate = {};
 
-  render();
-</script>
+      const fetchEvents = (calendarId) =>
+        fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&singleEvents=true&orderBy=startTime&maxResults=2500`
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            (data.items || []).forEach((event) => {
+              const startDate = event.start.date || event.start.dateTime;
+              if (!startDate) return;
+              const date = new Date(startDate);
+              const day = date.getDate();
+              if (!eventsByDate[day]) eventsByDate[day] = [];
+              eventsByDate[day].push({
+                summary: event.summary,
+                calendar: calendarId,
+              });
+            });
+          })
+          .catch((err) => console.error("Gagal ambil event:", calendarId, err));
 
+      Promise.allSettled([
+        fetchEvents(calendar1),
+        fetchEvents(calendar2),
+        fetchEvents(calendarHoliday)
+      ]).then(() => {
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(year, month, day);
+          const div = document.createElement("div");
+          div.className = "day";
+          if (date.getDay() === 0) div.classList.add("sunday");
+          if (date.getDay() === 6) div.classList.add("saturday");
 
+          const dateDiv = document.createElement("div");
+          dateDiv.className = "date";
+          dateDiv.textContent = day;
+          div.appendChild(dateDiv);
 
+          if (eventsByDate[day]) {
+            eventsByDate[day].forEach((event) => {
+              const eventDiv = document.createElement("div");
+              eventDiv.className = "event";
 
-      </div>
-
-    </section><!-- /Portfolio Section -->
-
-    <!-- struktur Section -->
-    <section id="struktur" class="struktur-organisasi">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Struktur Organisasi</h2>
-        <p>Bagian Hubungan Antar Lembaga</p>
-      </div><!-- End Section Title -->
-
-      <div class="container">
-      <div class="person atasan">
-        <div class="img-wrapper">
-          <img src="assets/img/struktur/kabag.png" alt="Atasan">
-        </div>
-      </div>
-
-      <div class="staf-container">
-        <div class="person staf">
-          <div class="img-wrapper">
-            <a href="https://portal.bpk.go.id/sites/birohumasln/hal/hlnp/Pages/new.aspx" target="_blank"><img src="assets/img/struktur/kasubbag1.png" alt="Staf 1"></a>
-          </div>
-        </div>
-        <div class="person staf">
-          <div class="img-wrapper">
-            <a href="https://portal.bpk.go.id/sites/birohumasln/hal/ln/Pages/HomeNew.aspx" target="_blank"><img src="assets/img/struktur/kasubbag2.png" alt="Staf 2"></a>
-          </div>
-        </div>
-      </div>
-      </div>
-
-    </section><!-- /Struktur Section -->
-
-    <!-- Services Section -->
-    <section id="services" class="services section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Laporan Tahunan</h2>
-      </div><!-- End Section Title -->
-
-      <div class="container">
-
-        <div class="slideshow-container" data-aos="fade-up">
-          <div class="slides">
-            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/nikk/" target="_blank"><img src="assets/img/laptah/2021.png" alt="Laporan 1"></a></div>
-            <div class="slide"><a href="https://online.fliphtml5.com/laptahhlnp/qxtj/" target="_blank"><img src="assets/img/laptah/2020.png" alt="Laporan 2"></a></div>
-            <div class="slide"><a href="" target="_blank"><img src="" alt="Laporan 3"></a></div>
-            <div class="slide"><a href="" target="_blank"><img src="" alt="Laporan 4"></a></div>
-            <div class="slide"><a href="" target="_blank"><img src="" alt="Laporan 4"></a></div>
-
-          </div>
-          <!-- Tombol Navigasi -->
-          <a class="prev" onclick="moveSlide(-1)">&#10094;</a>
-          <a class="next" onclick="moveSlide(1)">&#10095;</a>
-        </div>
-          <script>
-            let index = 0;
-            const slides = document.querySelector('.slides');
-            const totalSlides = document.querySelectorAll('.slide').length;
-            const visibleSlides = 4; // jumlah gambar yg tampil sekaligus
-
-            function moveSlide(step) {
-              index = (index + step + totalSlides) % totalSlides;
-              if (index > totalSlides - visibleSlides) {
-                index = 0; // reset kalau habis
+              if (event.calendar === calendarHoliday) {
+                eventDiv.classList.add("holiday");
+              } else if (event.calendar === calendar1) {
+                eventDiv.classList.add("calendar1");
+              } else if (event.calendar === calendar2) {
+                eventDiv.classList.add("calendar2");
               }
-              slides.style.transform = `translateX(${-index * (100 / visibleSlides)}%)`;
-            }
-          </script>
-      </div>
+              eventDiv.textContent = event.summary;
+              div.appendChild(eventDiv);
+            });
+          }
 
-    </section><!-- /Services Section -->
+          calendarEl.appendChild(div);
+        }
+      });
+    }
 
+    function changeMonth(direction) {
+      currentDate.setMonth(currentDate.getMonth() + direction);
+      render();
+    }
 
-  </main>
-
-<footer id="footer" class="footer position-relative light-background">
-  <div class="container text-center">
-    <h3 class="sitename">Biro Humas dan Kerja Sama Internasional</h3>
-    <h5 class="sitename">Bagian Hubungan Antar Lembaga</h5>
-
-    <!-- Kontak -->
-    <div class="footer-contact mb-3">
-      <p><i class="bi bi-geo-alt"></i> Gedung Menara 7 Lantai 5 BPK RI, <br>Jl. Jend. Gatot Subroto Kav 31, Jakarta</p>
-      <p><i class="bi bi-envelope"></i> hal@bpk.go.id</p>
-      <p><i class="bi bi-telephone"></i> Telp: (021)25549000 ext.----</p>
-    </div>
-
-    <div class="container">
-      <div class="copyright">
-        <span>Copyright</span> <strong class="px-1 sitename">Bagian Hubungan Antar Lembaga</strong> <span>All Rights Reserved</span>
-      </div>
-      <div class="credits">
-        Designed by <a href="#">Bagian Hubungan Antar Lembaga</a>
-      </div>
-    </div>
-  </div>
-</footer>
-
-
-  <!-- Scroll Top -->
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Preloader -->
-  <div id="preloader"></div>
-
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/typed.js/typed.umd.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
-  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-
-  <!-- Main JS File -->
-  <script src="assets/js/main.js"></script>
-
+    render();
+  </script>
 </body>
 </html>
