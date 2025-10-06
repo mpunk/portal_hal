@@ -1,42 +1,129 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kalender G
-   
-n</title>
+  <title>Kalender Gabungan</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    #calendar { 
-      display: grid; 
-      grid-template-columns: repeat(7, 1fr); 
-      gap: 5px; 
+    /* Navigasi Bulan */
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 1.5rem;
     }
-    .day-name { font-weight: bold; text-align: center; background: #eee; padding: 5px; }
-    .day { border: 1px solid #ccc; min-height: 80px; padding: 4px; position: relative; }
-    .sunday { background: #fce4ec; }
-    .saturday { background: #e3f2fd; }
-    .date { font-weight: bold; margin-bottom: 4px; }
-    .event { font-size: 12px; padding: 2px 4px; margin: 2px 0; border-radius: 4px; color: #fff; }
-    .holiday { background: #c62828; }      /* merah */
-    .calendar1 { background: #2e7d32; }    /* hijau */
-    .calendar2 { background: #1565c0; }    /* biru */
+    .nav button {
+      padding: 8px 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background: #1565c0;
+      color: white;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .nav button:hover {
+      background: #0d47a1;
+      transform: translateY(-2px);
+    }
+
+    /* Calendar Grid */
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    /* Day Names */
+    .day-name {
+      font-weight: bold;
+      text-align: center;
+      background-color: #1e73be;
+      color: white;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+    }
+
+    /* Day Cells */
+    .day {
+      min-height: 120px;
+      background-color: white;
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      position: relative;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+    .date {
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+    .day:hover {
+      background-color: #e3f2fd;
+      transform: scale(1.02);
+      box-shadow: 0 5px 14px rgba(21, 101, 192, 0.2);
+    }
+
+    /* Weekend Colors */
+    .day.sunday {
+      background-color: #ef5350;
+      color: white;
+      font-weight: 600;
+    }
+    .day.saturday {
+      background-color: #90caf9;
+      color: #0d47a1;
+      font-weight: 600;
+    }
+
+    /* Events */
+    .event {
+      padding: 6px 8px;
+      font-size: 9px;
+      border-left: 4px solid;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      color: white;
+    }
+
+    /* Warna otomatis */
+    .event-color-1 { background-color: #42a5f5; border-color: #1e88e5; }
+    .event-color-2 { background-color: #66bb6a; border-color: #43a047; }
+    .event-color-3 { background-color: #ffa726; border-color: #fb8c00; }
+    .event-color-4 { background-color: #ef5350; border-color: #e53935; }
+    .event-color-5 { background-color: #ab47bc; border-color: #8e24aa; }
+
+    /* Holiday Highlight */
+    .holiday {
+      background-color: #ffcdd2;
+      border-left: 4px solid #e53935;
+      color: #b71c1c;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
-  <h2 id="month-year"></h2>
-  <button onclick="changeMonth(-1)">◀️ Bulan Sebelumnya</button>
-  <button onclick="changeMonth(1)">Bulan Berikutnya ▶️</button>
-  <div id="calendar"></div>
+  <h2 id="month-year" style="text-align:center; margin-bottom:1rem;"></h2>
+  <div class="nav">
+    <button onclick="changeMonth(-1)">◀️ Bulan Sebelumnya</button>
+    <button onclick="changeMonth(1)">Bulan Berikutnya ▶️</button>
+  </div>
+  <div id="calendar" class="calendar"></div>
 
   <script>
     const calendarEl = document.getElementById("calendar");
     const monthYearEl = document.getElementById("month-year");
 
-    // Ganti dengan calendar ID masing-masing
-    const calendar1 = "bagianhal@gmail.com"; 
-    const calendar2 = "subbaghlnp@gmail.com";
+    // Kalender berbeda (2 email + libur nasional)
+    const calendar1 = "email1@gmail.com"; 
+    const calendar2 = "email2@gmail.com";
     const calendarHoliday = "id.indonesian#holiday@group.v.calendar.google.com";
     const apiKey = "AIzaSyB9-FN6i4QpKFwiW4xC74x1WIkaQM8rHTI";
 
@@ -50,7 +137,7 @@ n</title>
         year: "numeric",
       });
 
-      // header nama hari
+      // Header nama hari
       dayNames.forEach((name) => {
         const div = document.createElement("div");
         div.className = "day-name";
@@ -109,16 +196,15 @@ n</title>
           div.appendChild(dateDiv);
 
           if (eventsByDate[day]) {
-            eventsByDate[day].forEach((event) => {
+            eventsByDate[day].forEach((event, idx) => {
               const eventDiv = document.createElement("div");
               eventDiv.className = "event";
 
               if (event.calendar === calendarHoliday) {
                 eventDiv.classList.add("holiday");
-              } else if (event.calendar === calendar1) {
-                eventDiv.classList.add("calendar1");
-              } else if (event.calendar === calendar2) {
-                eventDiv.classList.add("calendar2");
+              } else {
+                const colorClass = `event-color-${(idx % 5) + 1}`;
+                eventDiv.classList.add(colorClass);
               }
               eventDiv.textContent = event.summary;
               div.appendChild(eventDiv);
