@@ -375,115 +375,113 @@
         <div class="calendar" id="calendar">
           <!-- Hari dan tanggal akan dirender via JavaScript -->
         </div>
-<script>
-  const calendarEl = document.getElementById("calendar");
-  const monthYearEl = document.getElementById("month-year");
+  <script>
+    const calendarEl = document.getElementById("calendar");
+    const monthYearEl = document.getElementById("month-year");
 
-  const calendarPersonal = "bagianhal@gmail.com";
-  const calendarHoliday = "id.indonesian#holiday@group.v.calendar.google.com";
-  const apiKey = "AIzaSyB9-FN6i4QpKFwiW4xC74x1WIkaQM8rHTI";
+    // Ganti dengan calendar ID masing-masing
+    const calendar1 = "email1@gmail.com"; 
+    const calendar2 = "email2@gmail.com";
+    const calendarHoliday = "id.indonesian#holiday@group.v.calendar.google.com";
+    const apiKey = "AIzaSyB9-FN6i4QpKFwiW4xC74x1WIkaQM8rHTI";
 
-  const dayNames = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-  let currentDate = new Date();
+    const dayNames = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+    let currentDate = new Date();
 
-  function render() {
-    calendarEl.innerHTML = "";
-    monthYearEl.textContent = currentDate.toLocaleDateString("id-ID", {
-      month: "long",
-      year: "numeric",
-    });
+    function render() {
+      calendarEl.innerHTML = "";
+      monthYearEl.textContent = currentDate.toLocaleDateString("id-ID", {
+        month: "long",
+        year: "numeric",
+      });
 
-    // Header nama hari
-    dayNames.forEach((name) => {
-      const div = document.createElement("div");
-      div.className = "day-name";
-      div.textContent = name;
-      calendarEl.appendChild(div);
-    });
+      // header nama hari
+      dayNames.forEach((name) => {
+        const div = document.createElement("div");
+        div.className = "day-name";
+        div.textContent = name;
+        calendarEl.appendChild(div);
+      });
 
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const start = new Date(year, month, 1);
+      const end = new Date(year, month + 1, 1);
+      const startDay = start.getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    const start = new Date(year, month, 1);
-    const end = new Date(year, month + 1, 1); // waktu maksimum (1 hari bulan berikutnya)
-    const startDay = start.getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate(); // jumlah hari di bulan ini
+      for (let i = 0; i < startDay; i++) {
+        calendarEl.appendChild(document.createElement("div"));
+      }
 
-    // Kosongkan slot sebelum tanggal 1
-    for (let i = 0; i < startDay; i++) {
-      calendarEl.appendChild(document.createElement("div"));
+      const eventsByDate = {};
+
+      const fetchEvents = (calendarId) =>
+        fetch(
+          `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?key=${apiKey}&timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&singleEvents=true&orderBy=startTime&maxResults=2500`
+        )
+          .then((res) => res.json())
+          .then((data) => {
+            (data.items || []).forEach((event) => {
+              const startDate = event.start.date || event.start.dateTime;
+              if (!startDate) return;
+              const date = new Date(startDate);
+              const day = date.getDate();
+              if (!eventsByDate[day]) eventsByDate[day] = [];
+              eventsByDate[day].push({
+                summary: event.summary,
+                calendar: calendarId,
+              });
+            });
+          })
+          .catch((err) => console.error("Gagal ambil event:", calendarId, err));
+
+      Promise.allSettled([
+        fetchEvents(calendar1),
+        fetchEvents(calendar2),
+        fetchEvents(calendarHoliday)
+      ]).then(() => {
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(year, month, day);
+          const div = document.createElement("div");
+          div.className = "day";
+          if (date.getDay() === 0) div.classList.add("sunday");
+          if (date.getDay() === 6) div.classList.add("saturday");
+
+          const dateDiv = document.createElement("div");
+          dateDiv.className = "date";
+          dateDiv.textContent = day;
+          div.appendChild(dateDiv);
+
+          if (eventsByDate[day]) {
+            eventsByDate[day].forEach((event) => {
+              const eventDiv = document.createElement("div");
+              eventDiv.className = "event";
+
+              if (event.calendar === calendarHoliday) {
+                eventDiv.classList.add("holiday");
+              } else if (event.calendar === calendar1) {
+                eventDiv.classList.add("calendar1");
+              } else if (event.calendar === calendar2) {
+                eventDiv.classList.add("calendar2");
+              }
+              eventDiv.textContent = event.summary;
+              div.appendChild(eventDiv);
+            });
+          }
+
+          calendarEl.appendChild(div);
+        }
+      });
     }
 
-    const eventsByDate = {};
+    function changeMonth(direction) {
+      currentDate.setMonth(currentDate.getMonth() + direction);
+      render();
+    }
 
-    const fetchEvents = (calendarId) =>
-      fetch(
-        `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(
-          calendarId
-        )}/events?key=${apiKey}&timeMin=${start.toISOString()}&timeMax=${end.toISOString()}&singleEvents=true&orderBy=startTime`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          (data.items || []).forEach((event) => {
-            const date = new Date(event.start.date || event.start.dateTime);
-            const day = date.getDate();
-            if (!eventsByDate[day]) eventsByDate[day] = [];
-            eventsByDate[day].push({
-              summary: event.summary,
-              isHoliday: calendarId === calendarHoliday,
-            });
-          });
-        })
-        .catch((err) => {
-          console.error("Gagal mengambil event dari:", calendarId, err);
-        });
-
-    // Ambil data dan render
-    Promise.allSettled([
-      fetchEvents(calendarPersonal),
-      fetchEvents(calendarHoliday),
-    ]).then(() => {
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
-        const div = document.createElement("div");
-        div.className = "day";
-        if (date.getDay() === 0) div.classList.add("sunday");
-        if (date.getDay() === 6) div.classList.add("saturday");
-
-        const dateDiv = document.createElement("div");
-        dateDiv.className = "date";
-        dateDiv.textContent = day;
-        div.appendChild(dateDiv);
-
-        if (eventsByDate[day]) {
-          eventsByDate[day].forEach((event, idx) => {
-            const eventDiv = document.createElement("div");
-            eventDiv.className = "event";
-
-            if (event.isHoliday) {
-              eventDiv.classList.add("holiday");
-            } else {
-              const colorClass = `event-color-${(idx % 5) + 1}`;
-              eventDiv.classList.add(colorClass);
-            }
-
-            eventDiv.textContent = event.summary;
-            div.appendChild(eventDiv);
-          });
-        }
-
-        calendarEl.appendChild(div);
-      }
-    });
-  }
-
-  function changeMonth(direction) {
-    currentDate.setMonth(currentDate.getMonth() + direction);
     render();
-  }
-
-  render();
-</script>
+  </script>
 
       </div>
 
